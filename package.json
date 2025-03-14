@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "scripts": {
-    "start": "dotenvx run --env-file=.env -- node .",
-    "dev": "dotenvx run --env-file=.env.dev --env-file=.env -- node .",
+    "start": "dotenvx run --env-file=.env -- ts-node ./src/index.ts",
+    "dev": "dotenvx run --env-file=.env.dev --env-file=.env -- ts-node ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
