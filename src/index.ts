@@ -1,5 +1,6 @@
-const express = require('express');
-const dotenv = require('@dotenvx/dotenvx');
+import express from 'express';
+import mongoose from "mongoose";
+import dotenv from '@dotenvx/dotenvx';
 
 dotenv.config();
 
@@ -8,6 +9,21 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json()); // Allow JSON parsing
 
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI as string)
+  .then(() => console.log('User Profile Service connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
+
+// Define the user schema
+const userProfileSchema = new mongoose.Schema({
+    profileName: String,
+    profileLastName: String,
+    cellphoneNumber: String,
+    emailAddress: String
+});
+
+// Create a model
+const UserProfileModel = mongoose.model('UserProfile', userProfileSchema);
 
 app.put('/create-profile', async (req, res) => {
     console.log('Received request at /create-profile:', req.body);
@@ -30,6 +46,6 @@ app.delete('/delete-profile', async (req, res) => {
 });
 
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`Profile service running at port ${PORT}`);
 });
