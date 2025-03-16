@@ -1,11 +1,19 @@
 import express from 'express';
 import mongoose from "mongoose";
+import fs from 'fs';
+import https from 'https';
 import dotenv from '@dotenvx/dotenvx';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 443;
+
+const options: https.ServerOptions = {
+    key: fs.readFileSync('./certs/server.key'),
+    cert: fs.readFileSync('./certs/server.crt'),
+    minVersion: 'TLSv1.2'
+};
 
 app.use(express.json()); // Allow JSON parsing
 
@@ -82,7 +90,7 @@ app.delete('/delete-profile/:id', async (req, res) => {
     }
 });
 
-
-app.listen(PORT, async () => {
-    console.log(`Profile service running at port ${PORT}`);
+// Start HTTPS server
+https.createServer(options, app).listen(PORT, () => {
+    console.log(`Secure Profile Service running at https://localhost:${PORT}`);
 });
