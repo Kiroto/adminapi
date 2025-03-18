@@ -9,12 +9,6 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 443;
 
-const options: https.ServerOptions = {
-    key: fs.readFileSync('./certs/server.key'),
-    cert: fs.readFileSync('./certs/server.crt'),
-    minVersion: 'TLSv1.2'
-};
-
 app.use(express.json()); // Allow JSON parsing
 
 let mongoUri = `${process.env.MONGO_HOST}/${process.env.MONGO_DATABASE}`
@@ -102,7 +96,19 @@ app.delete('/delete-profile/:id', async (req, res) => {
     }
 });
 
-// Start HTTPS server
-https.createServer(options, app).listen(PORT, () => {
-    console.log(`Secure Profile Service running at https://localhost:${PORT}`);
-});
+try {
+    const options: https.ServerOptions = {
+        key: fs.readFileSync('./certs/server.key'),
+        cert: fs.readFileSync('./certs/server.crt'),
+        minVersion: 'TLSv1.2'
+    };
+
+    // Start HTTPS server
+    https.createServer(options, app).listen(PORT, () => {
+        console.log(`Secure Profile Service running at https://localhost:${PORT}`);
+    });
+} catch (e: any) {
+    app.listen(PORT, () => {
+        console.log(`Profile Service running at http://localhost:${PORT}`);
+    })
+}
