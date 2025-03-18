@@ -17,8 +17,20 @@ const options: https.ServerOptions = {
 
 app.use(express.json()); // Allow JSON parsing
 
+let mongoUri = `${process.env.MONGO_HOST}/${process.env.MONGO_DATABASE}`
+
+if (process.env.MONGO_USER && process.env.MONGO_PASSWORD) {
+    mongoUri = `${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${mongoUri}`
+}
+
+if (process.env.MONGO_AUTH_SOURCE) {
+    mongoUri = `${mongoUri}?authSource=${process.env.MONGO_AUTH_SOURCE}`
+}
+
+mongoUri = `mongodb://${mongoUri}`
+
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI as string)
+mongoose.connect(mongoUri as string)
     .then(() => console.log('User Profile Service connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
 
